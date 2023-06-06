@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Svg, Circle, Path } from 'react-native-svg';
-
+import { Card } from 'react-native-paper';
 
 export default function HomeScreen() {
   const [numProfsInscrits, setNumProfsInscrits] = useState(0);
@@ -9,14 +9,13 @@ export default function HomeScreen() {
   const [villesDemandees, setVillesDemandees] = useState([]);
   const [numProfsParGrade, setNumProfsParGrade] = useState([]);
 
- 
   useEffect(() => {
     fetch('https://troubled-red-garb.cyclic.app/professeurs')
       .then((response) => response.json())
       .then((data) => {
         setNumProfsInscrits(data.length);
-        setSpecialites(calculateProfessorsBySpeciality (data));
-        setVillesDemandees(calculateMostDemandedCities (data));
+        setSpecialites(calculateProfessorsBySpeciality(data));
+        setVillesDemandees(calculateMostDemandedCities(data));
         setNumProfsParGrade(calculateProfessorsByGrade(data));
       })
       .catch((error) => {
@@ -24,7 +23,7 @@ export default function HomeScreen() {
       });
   }, []);
 
-  const calculateProfessorsBySpeciality= (data) => {
+  const calculateProfessorsBySpeciality = (data) => {
     const specialitesCount = {};
     data.forEach((prof) => {
       const specialite = prof.specialite;
@@ -38,13 +37,13 @@ export default function HomeScreen() {
       .map(([label, value], index) => ({
         label,
         value,
-        color:getSpecialityColors(index),
+        color: getSpecialityColors(index),
       }))
-      .sort((a, b) => b.value - a.value) 
+      .sort((a, b) => b.value - a.value)
       .slice(0, 13);
   };
 
-  const calculateMostDemandedCities  = (data) => {
+  const calculateMostDemandedCities = (data) => {
     const villesCount = {};
     data.forEach((prof) => {
       const villeDemandee = prof.villeDesiree;
@@ -59,10 +58,10 @@ export default function HomeScreen() {
       .map(([label, value], index) => ({
         label,
         value,
-        color:getCityColors(index),
+        color: getCityColors(index),
       }))
       .sort((a, b) => b.value - a.value)
-      .slice(0, 10); 
+      .slice(0, 10);
   };
 
   const calculateProfessorsByGrade = (data) => {
@@ -105,9 +104,7 @@ export default function HomeScreen() {
 
       const pathData = `M${x1},${y1} A${radius},${radius} 0 ${largeArcFlag},1 ${x2},${y2} L${centerX},${centerY}`;
 
-      const arc = (
-        <Path key={item.label} d={pathData} fill={item.color} />
-      );
+      const arc = <Path key={item.label} d={pathData} fill={item.color} />;
 
       startAngle = endAngle;
 
@@ -126,92 +123,99 @@ export default function HomeScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.container}>
         <Text style={styles.infoText}>Nombre de professeurs inscrits : {numProfsInscrits}</Text>
-
-        <View style={styles.svgContainer}>
-          <Text style={styles.svgtTitle}>Nombre de professeus par spécialité</Text>
-          {renderPieChart(specialites)}
-          <View style={styles.colorLegendContainer}>
+        <Card style={styles.card}>
+          <View style={styles.svgContainer}>
+            <Text style={styles.svgtTitle}>Nombre de professeus par spécialité</Text>
+            {renderPieChart(specialites)}
+            <View style={styles.colorLegendContainer}>
+              {specialites.map((item, index) => (
+                <View key={index} style={styles.colorLegend}>
+                  <View style={[styles.colorIndicator, { backgroundColor: item.color }]}></View>
+                  <Text style={styles.colorLabel}>{item.label}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </Card>
+        <Card style={styles.card}>
+          <View style={styles.svgContainer}>
+            <Text style={styles.svgtTitle}>Villes les plus demandées</Text>
+            {villesDemandees.length > 0 ? (
+              renderPieChart(villesDemandees)
+            ) : (
+              <Text>Aucune donnée disponible pour les villes demandées.</Text>
+            )}
+            <View style={styles.colorLegendContainer}>
+              {villesDemandees.map((item, index) => (
+                <View key={index} style={styles.colorLegend}>
+                  <View style={[styles.colorIndicator, { backgroundColor: item.color }]}></View>
+                  <Text style={styles.colorLabel}>{item.label}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </Card>
+        <Card style={styles.card}>
+          <View style={styles.svgContainer}>
+            <Text style={styles.svgtTitle}>Nombre de professeurs par grade</Text>
+            {renderPieChart(numProfsParGrade)}
+            <View style={styles.colorLegendContainer}>
+              {numProfsParGrade.map((item, index) => (
+                <View key={index} style={styles.colorLegend}>
+                  <View style={[styles.colorIndicator, { backgroundColor: item.color }]}></View>
+                  <Text style={styles.colorLabel}>{item.label}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </Card>
+        <Card style={styles.card}>
+          <View style={styles.statContainer}>
+            <Text style={styles.statTitle}>les 10 spécialités les plus répartu</Text>
             {specialites.map((item, index) => (
-              <View key={index} style={styles.colorLegend}>
-                <View style={[styles.colorIndicator, { backgroundColor: item.color }]}></View>
-                <Text style={styles.colorLabel}>{item.label}</Text>
+              <View key={index} style={styles.statItem}>
+                <Text style={styles.statLabel}>{item.label}</Text>
+                <Text style={styles.statValue}>{item.value}</Text>
               </View>
             ))}
           </View>
-        </View>
-
-        <View style={styles.svgContainer}>
-          <Text style={styles.svgtTitle}>Villes les plus demandées</Text>
-          {villesDemandees.length > 0 ? (
-            renderPieChart(villesDemandees)
-          ) : (
-            <Text>Aucune donnée disponible pour les villes demandées.</Text>
-          )}
-          <View style={styles.colorLegendContainer}>
-            {villesDemandees.map((item, index) => (
-              <View key={index} style={styles.colorLegend}>
-                <View style={[styles.colorIndicator, { backgroundColor: item.color }]}></View>
-                <Text style={styles.colorLabel}>{item.label}</Text>
+        </Card>
+        <Card style={styles.card}>
+          <View style={styles.statContainer}>
+            <Text style={styles.statTitle}>Villes les plus demandées</Text>
+            {villesDemandees.slice(0, 15).map((item, index) => (
+              <View key={index} style={styles.statItem}>
+                <Text style={styles.statLabel}>{item.label}</Text>
+                <Text style={styles.statValue}>{item.value}</Text>
               </View>
             ))}
           </View>
-        </View>
-
-        <View style={styles.svgContainer}>
-          <Text style={styles.svgtTitle}>Nombre de professeurs par grade</Text>
-          {renderPieChart(numProfsParGrade)}
-          <View style={styles.colorLegendContainer}>
+        </Card>
+        <Card style={styles.card}>
+          <View style={styles.statContainer}>
+            <Text style={styles.statTitle}>Nombre de professeurs par grade</Text>
             {numProfsParGrade.map((item, index) => (
-              <View key={index} style={styles.colorLegend}>
-                <View style={[styles.colorIndicator, { backgroundColor: item.color }]}></View>
-                <Text style={styles.colorLabel}>{item.label}</Text>
+              <View key={index} style={styles.statItem}>
+                <Text style={styles.statLabel}>{item.label}</Text>
+                <Text style={styles.statValue}>{item.value}</Text>
               </View>
             ))}
           </View>
-        </View>
-
-        <View style={styles.statContainer}>
-          <Text style={styles.statTitle}>les 10 spécialités les plus répartu</Text>
-          {specialites.map((item, index) => (
-            <View key={index} style={styles.statItem}>
-              <Text style={styles.statLabel}>{item.label}</Text>
-              <Text style={styles.statValue}>{item.value}</Text>
-              
-            </View>
-            
-          ))}
-        </View><View style={styles.statContainer}>
-  <Text style={styles.statTitle}>Villes les plus demandées</Text>
-  {villesDemandees.slice(0, 15).map((item, index) => (
-    <View key={index} style={styles.statItem}>
-      <Text style={styles.statLabel}>{item.label}</Text>
-      <Text style={styles.statValue}>{item.value}</Text>
-    </View>
-  ))}
-</View>
-  <View style={styles.statContainer}>
-          <Text style={styles.statTitle}>Nombre de professeurs par grade</Text>
-          {numProfsParGrade.map((item, index) => (
-            <View key={index} style={styles.statItem}>
-              <Text style={styles.statLabel}>{item.label}</Text>
-              <Text style={styles.statValue}>{item.value}</Text>
-            </View>
-          ))}
-
-        
-        
+        </Card>
       </View>
-      </View>
-      
-      
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  card:{
+    alignItems: 'center',
+
   },
   
   infoText: {
@@ -223,7 +227,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   svgtTitle: {
-    fontSize: 30,
+    fontSize: 19,
     fontWeight: 'bold',
     marginBottom: 8,
   },
