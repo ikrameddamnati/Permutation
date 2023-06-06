@@ -10,7 +10,7 @@ export default function HomeScreen() {
   const [numProfsParGrade, setNumProfsParGrade] = useState([]);
 
   useEffect(() => {
-    fetch('https://troubled-red-garb.cyclic.app/professeurs')
+    fetch('https://tiny-worm-nightgown.cyclic.app/professeurs')
       .then((response) => response.json())
       .then((data) => {
         setNumProfsInscrits(data.length);

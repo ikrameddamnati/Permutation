@@ -20,7 +20,6 @@ export default function App() {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    // Mettez à jour l'utilisateur actuel avec les informations pertinentes si nécessaire
     setCurrentUser({ email: 'user@example.com' });
   };
 
@@ -32,8 +31,7 @@ export default function App() {
   const tabOffsetValue = useRef(new Animated.Value(0)).current;
 
   const getTabIconName = (routeName) => {
-    // Retourne le nom de l'icône appropriée en fonction du nom de la route
-    // Ajoutez votre logique ici pour déterminer les icônes de chaque onglet
+    
     switch (routeName) {
       case 'Accueil':
         return 'home';

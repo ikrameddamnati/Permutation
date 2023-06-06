@@ -9,7 +9,7 @@ const ProfilScreen = ({ currentUser }) => {
 
   const handleDeleteAccount = async () => {
     try {
-      const response = await fetch(`https://troubled-red-garb.cyclic.app/professeurs/${profileData.email}`, {
+      const response = await fetch(`https://tiny-worm-nightgown.cyclic.app/professeurs/${profileData.email}`, {
         method: 'DELETE',
       });
 
